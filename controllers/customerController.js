@@ -6,16 +6,16 @@ const jwt = require("jsonwebtoken");
 class customerController {
 
 
-// Register
+// Create Customer
   static registercustomer(req, res, next) {
-    const { username, email, password, nama_depan, nama_belakang, umur, role } = req.body;
+    const { username, email, password, firstname, lastname, age, role } = req.body;
     const customer = new Customer({
       username,
       email,
       password,
-      nama_depan,
-      nama_belakang,
-      umur,
+      firstname,
+      lastname,
+      age,
       role,
       date: Date.now()
     });
@@ -30,17 +30,17 @@ class customerController {
       .catch(next);
   }
 
-// // List resources
+// List customer
 
-//   static registerFind(req, res, next){
-//     User.find().then((user)=>{
-//       res.status(200).json({ 
-//         msg: 'List resource',
-//         data: user,
-//       });
-//     })
-//     .catch(next);
-//   }
+  static listCustomer(req, res, next){
+    Customer.find().then((customer)=>{
+      res.status(200).json({ 
+        msg: 'List Customer',
+        data: customer,
+      });
+    })
+    .catch(next);
+  }
 
   
   // Login customer
@@ -49,90 +49,72 @@ class customerController {
     Customer.findOne({ email })
       .then((customer) => {
         if (customer && bcrypt.compareSync(password, customer.password)) {
-          const access_token = jwt.sign({ _id: customer._id }, "ASSIGMENT_GAME");
+          const access_token = jwt.sign({ _id: customer._id }, "ASSIGMENT_STORE");
           res.status(200).json({ success: true, access_token });
         } else throw { name: "LOGIN_FAIL" };
       })
       .catch(next);
   }
 
-// // get
+// get
 
-// static getUser(req, res, next){
-//   const {UserId} = req.params;
-//   User.findById(UserId)
-//   .then((user)=>{
-//     res.status(200).json({ 
-//       success: true,
-//       data: user,
-//     });
-//   })
-//   .catch(next);
-//   }
+static getCustomer(req, res, next){
+  const {Id} = req.params;
+  Customer.findById(Id)
+  .then((customer)=>{
+    res.status(200).json({ 
+      success: true,
+      data: customer,
+    });
+  })
+  .catch(next);
+  }
   
-//   static registerModify(req, res, next) {
-//     const {username, tawnhallName} = req.body;
-//     const {UserId} = req.params;
+
+  // modify customer
+  static customerModify(req, res, next) {
+    const {username, email, password, nama_depan, nama_belakang, umur} = req.body;
+    const {Id} = req.params;
   
-//     const updateData = {
-//       username: username,
-//       tawnhallName: tawnhallName,
+    const updateData = {
+      username: username,
+      email: email, 
+      password: password,
+      nama_depan: nama_depan,
+      nama_belakang: nama_belakang,
+      umur: umur,
    
-//     }
+    }
   
-//     for (let key in updateData){
-//       if(!updateData[key]){
-//         delete updateData[key]
-//       }
-//     }
+    for (let key in updateData){
+      if(!updateData[key]){
+        delete updateData[key]
+      }
+    }
   
-//     User.findByIdAndUpdate(UserId, updateData, {new: true})
-//     .then((User)=>{
-//       res.status(200).json({ 
-//         msg: 'Success Update Tawnhall Name',
-//         data: User,
-//       });
-//     })
-//     .catch(next);
-//   }
+    Customer.findByIdAndUpdate(Id, updateData, {new: true})
+    .then((Customer)=>{
+      res.status(200).json({ 
+        msg: 'Success Update Data Customer',
+        data: Customer,
+      });
+    })
+    .catch(next);
+  }
 
-//   // Delete User
+  // Delete customer
 
-//   static registerDelete(req, res, next){
-//     const {UserId} = req.params
-//     User.findById(UserId).then((user)=>{
-//       res.status(200).json({ 
-//         msg: 'Success delete user', 
-//         data: user.remove(),
-//       })
-//     })
-//     .catch(next);
-//   }
+  static customerDelete(req, res, next){
+    const {Id} = req.params
+    Customer.findById(Id).then((customer)=>{
+      res.status(200).json({ 
+        msg: 'Success delete customer', 
+        data: customer.remove(),
+      })
+    })
+    .catch(next);
+  }
 
-  
-
-//   // Edit tawnhallName
-
-//   static put(req, res, next) {
-//     ({
-//       tawnhallName
-//     }= req.body);
-
-//     User.findOne({ 
-//       _id: req.params.id
-//     })
-//     .then(users =>{
-//       users.tawnhallName = tawnhallName;
-//       return users.save();
-//         })
-//         .then((users)=>{
-//           res.status(200).json({ 
-//             success: true,
-//             data: users,
-//           })
-//         })
-//         .catch(next);
-//   }
 }
 
 module.exports = customerController;
