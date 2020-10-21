@@ -3,11 +3,10 @@ const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
   const { access_token } = req.headers;
   if (access_token) {
-    jwt.verify(access_token, 'ASSIGMENT_GAME', (err, decoded) => {
+    jwt.verify(access_token, 'ASSIGMENT_STORE', (err, decoded) => {
       if (err) next({ name: 'INVALID_TOKEN' });
       else {
-        // console.log(decoded)
-        req._userId = decoded._id;
+        req._customerId = decoded._id;
         next();
       }
     });
